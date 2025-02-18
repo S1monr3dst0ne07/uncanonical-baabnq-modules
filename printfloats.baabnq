@@ -1,0 +1,58 @@
+
+use 'libs/math.baabnq';
+use 'libs/stack.baabnq';
+use 'libs/string.baabnq';
+use 'libs/fast.baabnq';
+
+
+"(::Float16, DigitsAfterDot::Int) => IO
+lab PrintFloats::Print;
+lab PrintFloats::PrintByDigitsAfterDot;
+    sub Stack::Swap; pull _digsAftDot;
+    sub Stack::Swap; pull _fp;
+
+    "sign
+    push 45;
+    push 43;
+    sub Stack::Swap ~ _fp & _SIGN_MASK == 0;
+    pull __;
+    pull _sign;
+    putchr _sign;
+
+    push _fp;
+    sub Floats::Neg ~ _fp & _SIGN_MASK != 0;
+    pull _fp;
+
+    "print digits before dot
+    push _fp;
+    sub Floats::Fp2Value;
+    sub String::Int2Str;
+    sub Stack::Dup;
+    sub String::Print;
+    pull __; free __;
+
+    "print radix dot
+    putchr 46;
+
+    "print digits after dot
+    push 10; sub Floats::Value2Fp; pull _fp10;
+    lab PrintFloats::Print::Loop;
+        push _fp;
+        push _fp10;
+        sub Floats::Mul;
+        pull _fp;
+
+        push _fp;
+        sub Floats::Fp2Value;
+        sub Fast::DivMod10;
+        pull __;
+        pull _digit;
+        putchr _digit + 48;
+
+        put _digsAftDot = _digsAftDot - 1;
+    jump PrintFloats::Print::Loop ~ _digsAftDot != 0;
+
+
+    return;
+
+
